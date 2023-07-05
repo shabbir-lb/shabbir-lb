@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: my-nginx-service
+spec:
+  selector: 
+    app: nginx #Matches labels to pod & deployment
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8080 #should match container port / deployment port
+
+  

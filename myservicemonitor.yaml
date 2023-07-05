@@ -1,0 +1,21 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  labels:
+    release: shabbir
+  name: spring-boot-with-docker-push
+spec:
+  endpoints:
+
+  - path: /actuator/prometheus
+    port: http-actuator-metrics
+    scheme: http
+    interval: 60s
+
+  jobLabel: spring-boot-with-docker-push
+  namespaceSelector:
+    matchNames:
+    - default
+  selector:
+    matchLabels:
+      app: spring-boot-with-docker-push

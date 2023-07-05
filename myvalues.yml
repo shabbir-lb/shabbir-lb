@@ -1,0 +1,313 @@
+# Source: alertmanager/templates/serviceaccount.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: shabbir-alertmanager
+  labels:
+    helm.sh/chart: alertmanager-0.33.1
+    app.kubernetes.io/name: alertmanager
+    app.kubernetes.io/instance: shabbir
+    app.kubernetes.io/version: "v0.25.0"
+    app.kubernetes.io/managed-by: Helm
+  namespace: monitoring
+automountServiceAccountToken: true
+---
+# Source: alertmanager/templates/configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: shabbir-alertmanager
+  labels:
+    helm.sh/chart: alertmanager-0.33.1
+    app.kubernetes.io/name: alertmanager
+    app.kubernetes.io/instance: shabbir
+    app.kubernetes.io/version: "v0.25.0"
+    app.kubernetes.io/managed-by: Helm
+  namespace: monitoring
+data:
+  alertmanager.yml: |
+    {{- toYaml .Values.alertManagerConfig | default "{}" | nindent 4 }}
+  {{- range $key, $value := .Values.alertManagerTemplates }}
+  {{ $key }}: |-
+    {{- $value | nindent 4 }}
+  {{- end }}
+  alertmanager.tmpl: |-
+---
+# Source: alertmanager/templates/services.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: shabbir-alertmanager
+  labels:
+    helm.sh/chart: alertmanager-0.33.1
+    app.kubernetes.io/name: alertmanager
+    app.kubernetes.io/instance: shabbir
+    app.kubernetes.io/version: "v0.25.0"
+    app.kubernetes.io/managed-by: Helm
+  namespace: monitoring
+spec:
+  type: ClusterIP
+  ports:
+    - port: 9093
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    app.kubernetes.io/name: alertmanager
+    app.kubernetes.io/instance: shabbir
+---
+# Source: alertmanager/templates/services.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: shabbir-alertmanager-headless
+  labels:
+    helm.sh/chart: alertmanager-0.33.1
+    app.kubernetes.io/name: alertmanager
+    app.kubernetes.io/instance: shabbir
+    app.kubernetes.io/version: "v0.25.0"
+    app.kubernetes.io/managed-by: Helm
+  namespace: monitoring
+spec:
+  clusterIP: None
+  ports:
+    - port: 9093
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    app.kubernetes.io/name: alertmanager
+    app.kubernetes.io/instance: shabbir
+---
+# Source: alertmanager/templates/statefulset.yaml
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: shabbir-alertmanager
+  labels:
+    helm.sh/chart: alertmanager-0.33.1
+    app.kubernetes.io/name: alertmanager
+    app.kubernetes.io/instance: shabbir
+    app.kubernetes.io/version: "v0.25.0"
+    app.kubernetes.io/managed-by: Helm
+  namespace: monitoring
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: alertmanager
+      app.kubernetes.io/instance: shabbir
+  serviceName: shabbir-alertmanager-headless
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: alertmanager
+        app.kubernetes.io/instance: shabbir
+      annotations:
+        checksum/config: 73dd860cf7962760e176c8afd5be1c7f5476f83a888558b8eb66c4185c4a7f13
+    spec:
+      automountServiceAccountToken: true
+      serviceAccountName: shabbir-alertmanager
+      securityContext:
+        fsGroup: 65534
+      containers:
+        - name: alertmanager
+          securityContext:
+            runAsGroup: 65534
+            runAsNonRoot: true
+            runAsUser: 65534
+          image: "quay.io/prometheus/alertmanager:v0.25.0"
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: POD_IP
+              valueFrom:
+                fieldRef:
+                  apiVersion: v1
+                  fieldPath: status.podIP
+          args:
+            - --storage.path=/alertmanager
+            - --config.file=/etc/alertmanager/alertmanager.yml
+          ports:
+            - name: http
+              containerPort: 9093
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+          resources:
+            {}
+          volumeMounts:
+            - name: config
+              mountPath: /etc/alertmanager
+            - name: storage
+              mountPath: /alertmanager
+      volumes:
+        - name: config
+          configMap:
+            name: shabbir-alertmanager
+        - name: storage
+          emptyDir: {}
+
+
+---------------------------------------------------------------------------------------------
+---
+# Source: alertmanager/templates/serviceaccount.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: lbalerting-alertmanager
+  labels:
+    helm.sh/chart: alertmanager-0.33.1
+    app.kubernetes.io/name: alertmanager
+    app.kubernetes.io/instance: lbalerting
+    app.kubernetes.io/version: "v0.25.0"
+    app.kubernetes.io/managed-by: Helm
+  namespace: monitoring
+automountServiceAccountToken: true
+---
+# Source: alertmanager/templates/configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: lbalerting-alertmanager
+  labels:
+    helm.sh/chart: alertmanager-0.33.1
+    app.kubernetes.io/name: alertmanager
+    app.kubernetes.io/instance: lbalerting
+    app.kubernetes.io/version: "v0.25.0"
+    app.kubernetes.io/managed-by: Helm
+  namespace: monitoring
+data:
+  alertmanager.yml: |
+    {{- toYaml .Values.alertManagerConfig | default "{}" | nindent 4 }}
+  {{- range $key, $value := .Values.alertManagerTemplates }}
+  {{ $key }}: |-
+    {{- $value | nindent 4 }}
+  {{- end }}
+  alertmanager.tmpl: |-
+---
+# Source: alertmanager/templates/services.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: lbalerting-alertmanager
+  labels:
+    helm.sh/chart: alertmanager-0.33.1
+    app.kubernetes.io/name: alertmanager
+    app.kubernetes.io/instance: lbalerting
+    app.kubernetes.io/version: "v0.25.0"
+    app.kubernetes.io/managed-by: Helm
+  namespace: monitoring
+spec:
+  type: ClusterIP
+  ports:
+    - port: 9093
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    app.kubernetes.io/name: alertmanager
+    app.kubernetes.io/instance: lbalerting
+---
+# Source: alertmanager/templates/services.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: lbalerting-alertmanager-headless
+  labels:
+    helm.sh/chart: alertmanager-0.33.1
+    app.kubernetes.io/name: alertmanager
+    app.kubernetes.io/instance: lbalerting
+    app.kubernetes.io/version: "v0.25.0"
+    app.kubernetes.io/managed-by: Helm
+  namespace: monitoring
+spec:
+  clusterIP: None
+  ports:
+    - port: 9093
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    app.kubernetes.io/name: alertmanager
+    app.kubernetes.io/instance: lbalerting
+---
+# Source: alertmanager/templates/statefulset.yaml
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: lbalerting-alertmanager
+  labels:
+    helm.sh/chart: alertmanager-0.33.1
+    app.kubernetes.io/name: alertmanager
+    app.kubernetes.io/instance: lbalerting
+    app.kubernetes.io/version: "v0.25.0"
+    app.kubernetes.io/managed-by: Helm
+  namespace: monitoring
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: alertmanager
+      app.kubernetes.io/instance: lbalerting
+  serviceName: lbalerting-alertmanager-headless
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: alertmanager
+        app.kubernetes.io/instance: lbalerting
+      annotations:
+        checksum/config: ebe6cd0fe1e73e1ef63fcdb68132fff687b45231a5249dd4d1fe3e7f7b5025f0
+    spec:
+      automountServiceAccountToken: true
+      serviceAccountName: lbalerting-alertmanager
+      securityContext:
+        fsGroup: 65534
+      containers:
+        - name: alertmanager
+          securityContext:
+            runAsGroup: 65534
+            runAsNonRoot: true
+            runAsUser: 65534
+          image: "quay.io/prometheus/alertmanager:v0.25.0"
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: POD_IP
+              valueFrom:
+                fieldRef:
+                  apiVersion: v1
+                  fieldPath: status.podIP
+          args:
+            - --storage.path=/alertmanager
+            - --config.file=/etc/alertmanager/alertmanager.yml
+          ports:
+            - name: http
+              containerPort: 9093
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+          resources:
+            {}
+          volumeMounts:
+            - name: config
+              mountPath: /etc/alertmanager
+            - name: storage
+              mountPath: /alertmanager
+      volumes:
+        - name: config
+          configMap:
+            name: lbalerting-alertmanager
+        - name: storage
+          emptyDir: {}
+

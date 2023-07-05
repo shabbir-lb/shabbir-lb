@@ -1,0 +1,191 @@
+persistentStorage:
+  enabled: true
+  localPath: true
+  storageClassName: "local-path"
+
+priorityClassesEnabled: false
+environment: "dev"
+
+minik8s:
+  enabled: true
+
+externalIP: "3.135.115.158" # Provide the public IP address of your instance.
+
+apigateway:
+  enabled: true
+  requestMemory: "0Gi"
+  requestCpu: "0m"
+  enabledDomainLevelAccess: true
+
+frontend:
+  enabled: true
+  requestMemory: "0Mi"
+  requestCpu: "0m"
+
+kongProxy:
+  enabled: true
+  requestMemory: "0Mi"
+  requestCpu: "0m"
+
+networkPolicy:
+  enabled: false
+
+servicesOnNodePort:
+  enabled: true
+
+gpu:
+  nodesAvailable: false
+
+auth:
+  password: admin@123
+  requestMemory: "0Gi"
+  requestCpu: "0m"
+  authBaseUrl: "3.135.115.158"
+
+kafka:
+  metricsEnabled: true
+  internal:
+    enabled: true
+  requestMemory: "0Mi"
+  requestCpu: "0m"
+  defaultReplications: 1
+
+mongodb:
+  enabled: true
+  requestMemory: "0Mi"
+  requestCpu: "0m"
+
+monitoring:
+  enabled: false
+  prometheusPushGateway: true
+
+elasticsearch:
+  enabled: true
+  requestMemory: "0Gi"
+  requestCpu: "0m"
+
+internalServices:
+  requestMemory: "0Mi"
+  requestCpu: "0m"
+
+mlServices:
+  tikaServer:
+    enabled: true
+    requestsMemory: "0Gi"
+    requestCpu: "0m"
+  textExtraction:
+    enabled: true
+    requestsMemory: "0Gi"
+    requestsCpu: "0m"
+    limitsMemory: "6Gi"
+    headless: true
+  textExtractionNonOCR:
+    enabled: false
+    requestsMemory: "0Gi"
+    requestsCpu: "0m"
+    limitsMemory: "3Gi"
+  presidioServer:
+    enabled: true
+    requestsMemory: "0Gi"
+    requestCpu: "0m"
+  bloomFilterBuilder:
+    requestCpu: "0m"
+    requestsMemory: "0Gi"
+
+labelStudio:
+  enabled: false
+
+labelStudioML:
+  enabled: false
+  requestsMemory: "0Gi"
+  requestsCpu: "0m"
+
+mongoAggregator:
+  enabled: true
+  requestMemory: "0Gi"
+  requestCpu: "0m"
+
+alertUtils:
+  slackFeedbackAlertsWebhookUrl: "https://hooks.slack.com/services/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"
+  slackServicesAlertsWebhookUrl: "https://hooks.slack.com/services/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"
+
+policyEngine:
+  enabled: true
+  requestMemory: "0Mi"
+  requestCpu: "0m"
+
+datasourceStatsAggregator:
+  enabled: true
+  requestMemory: "0Mi"
+  requestCpu: "0m"
+
+datahub:
+  enabled: true
+  gms:
+    requestMemory: "0Gi"
+    requestCpu: "0m"
+  gmsGraphQL:
+    requestMemory: "0Gi"
+    requestCpu: "0m"
+  frontend:
+    requestMemory: "0Gi"
+    requestCpu: "0m"
+
+schemaRegistry:
+  enabled: true
+  requestMemory: "0Gi"
+  requestCpu: "0m"
+
+etcd:
+  enabled: false
+  requestMemory: "0Gi"
+  requestCpu: "0m"
+
+postInstallJob: true
+
+cookieEngine:
+  enabled: false
+  requestMemory: "0Mi"
+  requestCpu: "0m"
+
+redis:
+  enabled: true
+
+contextManagement:
+  recordExpirationMinutes: "10"
+
+notification:
+  enabled: true
+  apiGatewayBaseUrl: "3.135.115.158:31112"
+
+healthMonitor:
+  enabled: false
+
+vault:
+  requestMemory: "0Mi"
+  requestCpu: "0m"
+
+qdrant:
+  enabled: true
+  requestMemory: "0Mi"
+  requestCpu: "0m"
+
+metricsServer:
+  enabled: false
+
+airbyte:
+  enabled: false
+
+kibana:
+  enabled: false
+  requestMemory: "0Mi"
+  requestCpu: "0m"
+
+serviceability:
+  enabled: true
+
+datasourcePriorities:
+  enabled: true
+  enabledTextExtractionCelery: true
+  enabledPresidioCelery: true
+  invokePresidioViaCelery: true

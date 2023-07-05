@@ -1,0 +1,109 @@
+persistentStorage:
+  enabled: true
+  storageClassName: "gp2"
+  prometheusVolumeSize: "50Gi"
+
+grafana:
+  enabled: true
+
+alertManagerConfig:
+  global: {}
+    # slack_api_url: ''
+
+  templates:
+    - '/etc/alertmanager/*.tmpl'
+
+  receivers:
+    - name: default-receiver
+      slack_configs:
+      - api_url: https://hooks.slack.com/services/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
+        channel: '#monitoring-stack-alert-notifications'
+        send_resolved: true
+        icon_url: https://avatars3.githubusercontent.com/u/3380462
+        text: >-
+            {{ range .Alerts -}}
+            *Alert:* {{ .Annotations.title }}{{ if .Labels.severity }} - `{{ .Labels.severity }}`{{ end }}
+              *Details:*
+              {{ range .Labels.SortedPairs }} • *{{ .Name }}:* `{{ .Value }}`
+              {{ end }}
+            {{ end }}
+      # slack_configs:
+      #  - channel: '@you'
+      #    send_resolved: true
+
+  route:
+    group_by: ['alertname', 'cluster', 'service']
+    group_wait: 10s
+    group_interval: 5m
+    receiver: default-receiver
+    repeat_interval: 30m
+
+gpu:
+  nodesAvailable: false
+  nodeSelector: {}
+
+images:
+  pullSecrets:
+    - docregistry-secret       #DO NOT CHANGE THIS VALUE, we are creating lightbeam docker registry secret with this name.
+  pullPolicy: Always
+
+  grafanaInitContainerImage:
+    registry: docker.io
+    repo: kiwigrid
+    imageName: k8s-sidecar
+    tag: 0.1.151
+  grafanaImage:
+    registry: docker.io
+    repo: grafana
+    imageName: grafana
+    tag: 8.1.0
+  prometheusImage:
+    registry: quay.io
+    repo: prometheus
+    imageName: prometheus
+    tag: v2.18.2
+  prometheusConfigReloadImage:
+    registry: docker.io
+    repo: jimmidyson
+    imageName: configmap-reload
+    tag: v0.3.0
+  prometheusConfigReloaderImage:
+    registry: quay.io
+    repo: coreos
+    imageName: prometheus-config-reloader
+    tag: v0.38.1
+  prometheusOperatorImage:
+    registry: quay.io
+    repo: coreos
+    imageName: prometheus-operator
+    tag: v0.38.1
+  promOperatorAdmissionCreateImage:
+    registry: docker.io
+    repo: jettech
+    imageName: kube-webhook-certgen
+    tag: v1.2.1
+  promNodeExporterImage:
+    registry: quay.io
+    repo: prometheus
+    imageName: node-exporter
+    tag: v1.0.0
+  kubeStateMetricsImage:
+    registry: quay.io
+    repo: coreos
+    imageName: kube-state-metrics
+    tag: v1.9.7
+  promSidecarTLSProxy:
+    registry: docker.io
+    repo: squareup
+    imageName: ghostunnel
+    tag: v1.5.2
+  alertManagerImage:
+    registry: quay.io
+    repo: prometheus
+    imageName: alertmanager
+    tag: v0.21.0
+  gpuNodeExporter:
+    registry: nvcr.io
+    repo: nvidia/k8s
+    imageName: dcgm-exporter
+    tag: 2.1.4-2.3.1-ubuntu18.04
